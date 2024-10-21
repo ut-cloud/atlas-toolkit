@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"context"
 	"crypto/md5"
 	"fmt"
+	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )
@@ -57,4 +59,12 @@ func AnalyseToken(tokenString string) (*UserClaims, error) {
 // 生成唯一码
 func GetUUID() string {
 	return uuid.New().String()
+}
+
+func GetLoginUserId(ctx context.Context) string {
+	var u string
+	if md, ok := metadata.FromServerContext(ctx); ok {
+		u = md.Get("identity")
+	}
+	return u
 }

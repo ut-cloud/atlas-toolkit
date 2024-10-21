@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/ut-cloud/atlas-toolkit/utils"
 	"strings"
@@ -15,12 +16,21 @@ func Auth() middleware2.Middleware {
 	return func(handler middleware2.Handler) middleware2.Handler {
 		return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 			if tr, ok := transport.FromServerContext(ctx); ok {
-				auth := tr.RequestHeader().Get("Authorization")
-				if auth == "" {
+				authHeader := tr.RequestHeader().Get("Authorization")
+				if authHeader == "" {
 					return nil, errors.New("no Auth")
 				}
-				splitStr := strings.Split(auth, " ")
-				token := splitStr[len(splitStr)-1]
+				// Check if the header starts with "Bearer "
+				if !strings.HasPrefix(authHeader, "Bearer ") {
+					return nil, fmt.Errorf("authorization header is not a bearer token")
+				}
+				// Extract the token part by trimming "Bearer "
+				token := strings.TrimPrefix(authHeader, "Bearer ")
+				if token == "" {
+					return nil, fmt.Errorf("token is missing")
+				}
+				//splitStr := strings.Split(auth, " ")
+				//token := splitStr[len(splitStr)-1]
 				userClaims, err := utils.AnalyseToken(token)
 				if err != nil {
 					return nil, err
