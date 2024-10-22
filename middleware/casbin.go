@@ -9,6 +9,7 @@ import (
 	jwtV5 "github.com/golang-jwt/jwt/v5"
 	"github.com/ut-cloud/atlas-toolkit/casbin"
 	"github.com/ut-cloud/atlas-toolkit/utils"
+	"strings"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 type SecurityUser struct {
 	Path        string
 	Method      string
-	AuthorityId string
+	AuthorityId []string
 }
 
 func NewSecurityUser() casbin.SecurityUser {
@@ -32,8 +33,8 @@ func (su *SecurityUser) ParseFromContext(ctx context.Context) error {
 	//	return errors.New("jwt claim missing")
 	//}
 
-	id := utils.GetLoginUserId(ctx)
-	su.AuthorityId = id
+	identity := utils.GetLoginIdentity(ctx)
+	su.AuthorityId = strings.Split(identity, ",")
 
 	if header, ok := transport.FromServerContext(ctx); ok {
 		su.Path = header.Operation()
@@ -45,7 +46,7 @@ func (su *SecurityUser) ParseFromContext(ctx context.Context) error {
 	return nil
 }
 
-func (su *SecurityUser) GetSubject() string {
+func (su *SecurityUser) GetSubject() []string {
 	return su.AuthorityId
 }
 
@@ -116,8 +117,7 @@ func (su *SecurityUser) ParseAccessJwtToken(claims jwtV5.Claims) error {
 
 	strAuthorityId, ok := mc[ClaimAuthorityId]
 	if ok {
-		su.AuthorityId = strAuthorityId.(string)
+		su.AuthorityId = strings.Split(strAuthorityId.(string), ",")
 	}
-
 	return nil
 }

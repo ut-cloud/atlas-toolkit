@@ -7,7 +7,7 @@ type SecurityUser interface {
 	ParseFromContext(ctx context.Context) error
 
 	// GetSubject returns the subject of the token.
-	GetSubject() string
+	GetSubject() []string
 
 	// GetObject returns the object of the token.
 	GetObject() string

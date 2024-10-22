@@ -80,10 +80,16 @@ func Server(opts ...Option) middleware.Middleware {
 			}
 
 			ctx = context.WithValue(ctx, SecurityUserContextKey, securityUser)
-
-			allowed, err := o.enforcer.Enforce(securityUser.GetSubject(), securityUser.GetObject(), securityUser.GetAction())
-			if err != nil {
-				return nil, err
+			// 遍历 AuthorityId 数组，逐个进行 Enforce 检查
+			allowed := false
+			for _, subject := range securityUser.GetSubject() {
+				allowed, err := o.enforcer.Enforce(subject, securityUser.GetObject(), securityUser.GetAction())
+				if err != nil {
+					return nil, err
+				}
+				if allowed {
+					break // 如果某个 subject 被允许，跳出循环
+				}
 			}
 			if !allowed {
 				return nil, ErrUnauthorized
