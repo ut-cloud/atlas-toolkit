@@ -14,9 +14,9 @@ func Encrypt(pwd string) string {
 }
 
 // Verify 校验密码
-func Verify(pwd1 string, pwd2 string) bool {
-	// Returns true on success, pwd1 is for the database.
-	err := bcrypt.CompareHashAndPassword([]byte(pwd1), []byte(pwd2))
+func Verify(hashedPwd string, inputPwd string) bool {
+	// Returns true on success, hashedPwd is for the database.
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(inputPwd))
 	if err != nil {
 		return false
 	} else {

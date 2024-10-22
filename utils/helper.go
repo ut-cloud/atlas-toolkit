@@ -11,7 +11,8 @@ import (
 
 type UserClaims struct {
 	Identity string `json:"identity"`
-	Name     string `json:"name"`
+	UserId   string `json:"userId"`
+	UserName string `json:"UserName"`
 	jwt.StandardClaims
 }
 
@@ -21,14 +22,15 @@ func GetMd5(s string) string {
 	return fmt.Sprintf("%x", md5.Sum([]byte(s)))
 }
 
-var myKey = []byte("gin-gorm-oj-key")
+var myKey = []byte("YXRsYXMtYWRtaW4=")
 
 // GenerateToken
 // 生成 token
-func GenerateToken(identity, name string) (string, error) {
+func GenerateToken(identity, userId, username string) (string, error) {
 	UserClaim := &UserClaims{
 		Identity:       identity,
-		Name:           name,
+		UserId:         userId,
+		UserName:       username,
 		StandardClaims: jwt.StandardClaims{},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, UserClaim)
@@ -62,6 +64,14 @@ func GetUUID() string {
 }
 
 func GetLoginUserId(ctx context.Context) string {
+	var u string
+	if md, ok := metadata.FromServerContext(ctx); ok {
+		u = md.Get("userId")
+	}
+	return u
+}
+
+func GetLoginIdentity(ctx context.Context) string {
 	var u string
 	if md, ok := metadata.FromServerContext(ctx); ok {
 		u = md.Get("identity")
