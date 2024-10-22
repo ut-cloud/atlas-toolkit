@@ -39,7 +39,8 @@ func Auth() middleware2.Middleware {
 					return nil, errors.New("no Auth")
 				}
 				ctx = metadata.NewServerContext(ctx, metadata.New(map[string][]string{
-					"username": []string{userClaims.Name},
+					"username": []string{userClaims.UserName},
+					"userId":   []string{userClaims.UserId},
 					"identity": []string{userClaims.Identity},
 				}))
 			}
