@@ -33,7 +33,7 @@ func Auth() middleware2.Middleware {
 				//token := splitStr[len(splitStr)-1]
 				userClaims, err := utils.AnalyseToken(token)
 				if err != nil {
-					return nil, err
+					return nil, errors.New("invalid token")
 				}
 				if userClaims.Identity == "" {
 					return nil, errors.New("no Auth")
