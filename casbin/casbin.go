@@ -7,6 +7,7 @@ import (
 	"github.com/casbin/casbin/v2/persist"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/go-kratos/kratos/v2/transport"
 )
 
 type contextKey string
@@ -34,6 +35,7 @@ type options struct {
 	model               model.Model
 	policy              persist.Adapter
 	enforcer            *stdcasbin.SyncedEnforcer
+	whiteList           map[string]struct{} // 增加白名单字段
 }
 
 func WithSecurityUserCreator(securityUserCreator SecurityUserCreator) Option {
@@ -54,9 +56,20 @@ func WithCasbinPolicy(policy persist.Adapter) Option {
 	}
 }
 
+// WithWhiteList 新增 WithWhiteList 选项，用于设置白名单
+func WithWhiteList(whiteList []string) Option {
+	return func(o *options) {
+		o.whiteList = make(map[string]struct{})
+		for _, path := range whiteList {
+			o.whiteList[path] = struct{}{}
+		}
+	}
+}
+
 func Server(opts ...Option) middleware.Middleware {
 	o := &options{
 		securityUserCreator: nil,
+		whiteList:           make(map[string]struct{}), // 初始化白名单
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -80,6 +93,15 @@ func Server(opts ...Option) middleware.Middleware {
 			}
 
 			ctx = context.WithValue(ctx, SecurityUserContextKey, securityUser)
+
+			// 获取当前操作路径
+			if header, ok := transport.FromServerContext(ctx); ok {
+				operation := header.Operation()
+				// 如果操作路径在白名单中，跳过 Casbin 检查
+				if _, ok := o.whiteList[operation]; ok {
+					return handler(ctx, req) // 直接处理请求，无需 Casbin 检查
+				}
+			}
 			// 遍历 AuthorityId 数组，逐个进行 Enforce 检查
 			for _, subject := range securityUser.GetSubject() {
 				allowed, err := o.enforcer.Enforce(subject, securityUser.GetObject(), securityUser.GetAction())

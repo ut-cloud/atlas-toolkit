@@ -30,8 +30,6 @@ func Auth() middleware2.Middleware {
 				if token == "" {
 					return nil, fmt.Errorf("token is missing")
 				}
-				//splitStr := strings.Split(auth, " ")
-				//token := splitStr[len(splitStr)-1]
 				userClaims, err := utils.AnalyseToken(token)
 				if err != nil {
 					return nil, errors2.New(401, err.Error(), "invalid token")

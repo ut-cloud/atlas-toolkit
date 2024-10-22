@@ -27,12 +27,6 @@ func NewSecurityUser() casbin.SecurityUser {
 }
 
 func (su *SecurityUser) ParseFromContext(ctx context.Context) error {
-	//if claims, ok := jwt.FromContext(ctx); ok {
-	//	su.AuthorityId = claims.(jwtV5.MapClaims)[ClaimAuthorityId].(string)
-	//} else {
-	//	return errors.New("jwt claim missing")
-	//}
-
 	identity := utils.GetLoginIdentity(ctx)
 	su.AuthorityId = strings.Split(identity, ",")
 
