@@ -7,6 +7,8 @@ require (
 	github.com/casbin/casbin/v2 v2.100.0
 	github.com/go-kratos/kratos/v2 v2.8.1
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/golang-jwt/jwt/v5 v5.1.0
+	github.com/gomodule/redigo v1.9.2
 	github.com/google/uuid v1.6.0
 	golang.org/x/crypto v0.28.0
 	google.golang.org/grpc v1.67.1
