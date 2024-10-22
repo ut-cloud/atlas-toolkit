@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	errors2 "github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/ut-cloud/atlas-toolkit/utils"
 	"strings"
@@ -33,7 +34,7 @@ func Auth() middleware2.Middleware {
 				//token := splitStr[len(splitStr)-1]
 				userClaims, err := utils.AnalyseToken(token)
 				if err != nil {
-					return nil, errors.New("invalid token")
+					return nil, errors2.New(401, err.Error(), "invalid token")
 				}
 				if userClaims.Identity == "" {
 					return nil, errors.New("no Auth")
