@@ -2,7 +2,7 @@ package base
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/metadata"
+	"github.com/ut-cloud/atlas-toolkit/utils"
 	"gorm.io/gorm"
 	"time"
 )
@@ -15,20 +15,14 @@ type Entity struct {
 	UpdateBy  string         `gorm:"type:varchar(100);not null;comment:更新人" json:"update_by"`
 }
 
-func (m *Entity) insertEntity(ctx context.Context) {
-	var uuid string
-	if md, ok := metadata.FromServerContext(ctx); ok {
-		uuid = md.Get("identity")
+func (m *Entity) InsertEntity(ctx context.Context) {
+	if m.CreateBy == "" {
+		m.CreateBy = utils.GetLoginUserId(ctx)
 	}
-	m.CreateBy = uuid
-	m.CreatedAt = time.Now()
 }
 
-func (m *Entity) updateEntity(ctx context.Context) {
-	var uuid string
-	if md, ok := metadata.FromServerContext(ctx); ok {
-		uuid = md.Get("identity")
+func (m *Entity) UpdateEntity(ctx context.Context) {
+	if m.UpdateBy == "" {
+		m.UpdateBy = utils.GetLoginUserId(ctx)
 	}
-	m.UpdateBy = uuid
-	m.UpdatedAt = time.Now()
 }
