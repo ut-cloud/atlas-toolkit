@@ -27,9 +27,11 @@ func InitCasbin(rPool *redis.Pool, perms []*RoleMenuPerm, roleKeys []string, ope
 	for i := range roleKeys {
 		rolePolicies[i] = []string{roleKeys[i], roleKeys[i]}
 	}
-	err = a.AddPolicies("", "g", rolePolicies)
-	if err != nil {
-		panic(fmt.Sprintf("[middleware] new redis adapter err: %s", err))
+	if len(rolePolicies) != 0 {
+		err = a.AddPolicies("", "g", rolePolicies)
+		if err != nil {
+			panic(fmt.Sprintf("[middleware] new redis adapter err: %s", err))
+		}
 	}
 	return m, a
 }
