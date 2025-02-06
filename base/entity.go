@@ -1,8 +1,8 @@
 package base
 
 import (
+	"atlas-toolkit/utils"
 	"context"
-	"github.com/ut-cloud/atlas-toolkit/utils"
 	"gorm.io/gorm"
 	"time"
 )

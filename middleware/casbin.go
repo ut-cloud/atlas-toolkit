@@ -1,14 +1,14 @@
 package middleware
 
 import (
+	"atlas-toolkit/casbin"
+	"atlas-toolkit/utils"
 	"context"
 	"errors"
 	"fmt"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport"
 	jwtV5 "github.com/golang-jwt/jwt/v5"
-	"github.com/ut-cloud/atlas-toolkit/casbin"
-	"github.com/ut-cloud/atlas-toolkit/utils"
 	"strings"
 )
 

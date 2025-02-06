@@ -1,10 +1,10 @@
 package casbin
 
 import (
+	"atlas-toolkit/casbin/redis_adapter"
 	"fmt"
 	"github.com/casbin/casbin/v2/model"
 	"github.com/gomodule/redigo/redis"
-	"github.com/ut-cloud/atlas-toolkit/casbin/redis_adapter"
 )
 
 func InitCasbin(rPool *redis.Pool, perms []*RoleMenuPerm, roleKeys []string, operaPolicies []string) (model.Model, *redis_adapter.Adapter) {
